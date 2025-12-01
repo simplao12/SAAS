@@ -1,9 +1,6 @@
 import { auth } from "@/lib/auth"
 import { redirect } from "next/navigation"
-import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import Link from "next/link"
-import { ArrowLeft } from "lucide-react"
 
 export default async function ProfilePage() {
   const session = await auth()
@@ -13,27 +10,20 @@ export default async function ProfilePage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <header className="bg-white border-b">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center gap-4">
-            <Link href="/dashboard">
-              <Button variant="ghost" size="sm">
-                <ArrowLeft className="h-4 w-4 mr-2" />
-                Voltar
-              </Button>
-            </Link>
-            <h1 className="text-2xl font-bold">Configurações</h1>
-          </div>
-        </div>
-      </header>
+    <div className="p-8">
+      <div className="mb-6">
+        <h1 className="text-3xl font-bold mb-2">Configurações</h1>
+        <p className="text-gray-600">
+          Gerencie suas informações pessoais e configurações da conta
+        </p>
+      </div>
 
-      <main className="container mx-auto px-4 py-8 max-w-2xl">
+      <div className="max-w-2xl">
         <Card>
           <CardHeader>
             <CardTitle>Informações da Conta</CardTitle>
             <CardDescription>
-              Gerencie suas informações pessoais e configurações
+              Suas informações pessoais
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
@@ -58,7 +48,7 @@ export default async function ProfilePage() {
           <CardHeader>
             <CardTitle>Configurações da Conta</CardTitle>
             <CardDescription>
-              Altere suas preferências e configurações
+              Altere suas preferências
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -70,13 +60,7 @@ export default async function ProfilePage() {
             </div>
           </CardContent>
         </Card>
-
-        <div className="mt-6">
-          <Link href="/dashboard">
-            <Button variant="outline">Voltar ao Dashboard</Button>
-          </Link>
-        </div>
-      </main>
+      </div>
     </div>
   )
 }
