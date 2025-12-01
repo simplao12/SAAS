@@ -24,16 +24,20 @@ import {
 
 type PaymentStatus = "PENDING" | "APPROVED" | "REJECTED" | "REFUNDED" | "CANCELLED"
 
+interface SearchParamsType {
+  search?: string
+  status?: string
+  dateFrom?: string
+  dateTo?: string
+}
+
 export default async function AdminFinancePage({
   searchParams,
 }: {
-  searchParams: {
-    search?: string
-    status?: string
-    dateFrom?: string
-    dateTo?: string
-  }
+  searchParams: Promise<SearchParamsType>
 }) {
+  const params = await searchParams
+
   const session = await auth()
 
   if (!session || session.user?.role !== "ADMIN") {
@@ -43,17 +47,17 @@ export default async function AdminFinancePage({
   // Filtros
   const where: any = {}
 
-  if (searchParams.status && searchParams.status !== "all") {
-    where.status = searchParams.status
+  if (params.status && params.status !== "all") {
+    where.status = params.status
   }
 
-  if (searchParams.dateFrom || searchParams.dateTo) {
+  if (params.dateFrom || params.dateTo) {
     where.createdAt = {}
-    if (searchParams.dateFrom) {
-      where.createdAt.gte = new Date(searchParams.dateFrom)
+    if (params.dateFrom) {
+      where.createdAt.gte = new Date(params.dateFrom)
     }
-    if (searchParams.dateTo) {
-      where.createdAt.lte = new Date(searchParams.dateTo)
+    if (params.dateTo) {
+      where.createdAt.lte = new Date(params.dateTo)
     }
   }
 
@@ -213,7 +217,7 @@ export default async function AdminFinancePage({
               <label className="text-sm font-medium mb-2 block">Status</label>
               <select
                 name="status"
-                defaultValue={searchParams.status || "all"}
+                defaultValue={params.status || "all"}
                 className="w-full h-10 rounded-md border border-input bg-background px-3 py-2 text-sm"
               >
                 <option value="all">Todos</option>
@@ -229,7 +233,7 @@ export default async function AdminFinancePage({
               <Input
                 type="date"
                 name="dateFrom"
-                defaultValue={searchParams.dateFrom}
+                defaultValue={params.dateFrom}
               />
             </div>
             <div>
@@ -237,7 +241,7 @@ export default async function AdminFinancePage({
               <Input
                 type="date"
                 name="dateTo"
-                defaultValue={searchParams.dateTo}
+                defaultValue={params.dateTo}
               />
             </div>
             <div className="flex items-end">
@@ -248,9 +252,9 @@ export default async function AdminFinancePage({
             </div>
             <div className="flex items-end">
               <ExportCSVButton
-                status={searchParams.status}
-                dateFrom={searchParams.dateFrom}
-                dateTo={searchParams.dateTo}
+                status={params.status}
+                dateFrom={params.dateFrom}
+                dateTo={params.dateTo}
               />
             </div>
           </form>
