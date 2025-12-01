@@ -24,8 +24,10 @@ type PaymentStatus = "PENDING" | "APPROVED" | "REJECTED" | "REFUNDED" | "CANCELL
 export default async function AdminFinanceDetailPage({
   params,
 }: {
-  params: { id: string }
+  params: Promise<{ id: string }>
 }) {
+  const { id } = await params
+  
   const session = await auth()
 
   if (!session || session.user?.role !== "ADMIN") {
@@ -33,7 +35,7 @@ export default async function AdminFinanceDetailPage({
   }
 
   const payment = await prisma.payment.findUnique({
-    where: { id: params.id },
+    where: { id },
     include: {
       subscription: {
         include: {
