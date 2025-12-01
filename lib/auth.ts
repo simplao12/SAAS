@@ -7,6 +7,7 @@ import { compare } from "bcryptjs"
 import type { NextAuthConfig } from "next-auth"
 
 export const authConfig = {
+  trustHost: true,
   adapter: PrismaAdapter(prisma),
   session: {
     strategy: "jwt",
