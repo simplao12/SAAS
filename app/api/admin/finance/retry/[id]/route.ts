@@ -5,9 +5,11 @@ import { MercadoPagoConfig, Preference } from 'mercadopago'
 
 export async function POST(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params
+
     const session = await auth()
 
     if (!session || session.user?.role !== "ADMIN") {
@@ -18,7 +20,7 @@ export async function POST(
     }
 
     const payment = await prisma.payment.findUnique({
-      where: { id: params.id },
+      where: { id },
       include: {
         subscription: {
           include: {
@@ -83,7 +85,7 @@ export async function POST(
 
     // Atualizar o payment com novo mercadoPagoId
     await prisma.payment.update({
-      where: { id: payment.id },
+      where: { id },
       data: {
         mercadoPagoId: result.id,
         updatedAt: new Date(),
@@ -96,9 +98,9 @@ export async function POST(
         userId: session.user.id,
         action: 'resend_payment',
         entity: 'payment',
-        entityId: payment.id,
+        entityId: id,
         details: {
-          paymentId: payment.id,
+          paymentId: id,
           newMercadoPagoId: result.id,
           amount: payment.amount.toString(),
         },
@@ -124,7 +126,6 @@ export async function POST(
           level: 'ERROR',
           message: 'Erro ao reenviar link de pagamento',
           details: {
-            paymentId: params.id,
             error: error instanceof Error ? error.message : 'Unknown error',
           },
           stack: error instanceof Error ? error.stack : undefined,
